@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLite Tables</title>
+    <style>
+      body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+#container {
+  display: flex;
+  height: 100vh; /* Adjust height as needed */
+  margin-left: 3vw;
+}
+
+#table-list {
+  background-color: #f0f0f0;
+  border-right: 1px solid #ccc;
+  width: 200px;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 200px;
+}
+
+#table-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#table-list li {
+  cursor: pointer;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+  transition: background-color 0.3s ease;
+}
+
+#table-list li:hover {
+  background-color: #e0e0e0;
+}
+
+#table-data {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+#table-data h3 {
+  margin-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ccc;
+}
+
+th {
+  background-color: #f0f0f0;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+
+}
+    </style>
+</head>
+<body>
+    <h2 style="margin-left: 3vw;">Database Tables</h2>
+    <div id="container">
+        <div id="table-list">
+            <ul>
+                {% for table in table_names %}
+                    <li class="table-item" onclick="fetchTableData('{{ table }}')">{{ table }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="table-data">
+            <h3>Table Data</h3>
+            <div id="data-content">Select a table to view its data.</div>
+        </div>
+    </div>
+
+    <script>
+        function fetchTableData(tableName) {
+            const dbPath = "{{ db_path }}";
+            console.log(dbPath)
+            fetch(`/get-table-data/?table_name=${tableName}&db_path=${dbPath}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '<table border="1"><tr>';
+                    // Add table headers
+                    for (let colName in data[0]) {
+                        html += `<th>${colName}</th>`;
+                    }
+                    html += '</tr>';
+
+                    // Add table rows
+                    data.forEach(row => {
+                        html += '<tr>';
+                        for (let colName in row) {
+                            html += `<td>${row[colName]}</td>`;
+                        }
+                        html += '</tr>';
+                    });
+
+                    html += '</table>';
+                    document.getElementById('data-content').innerHTML = html;
+                })
+                .catch(error => console.error('Error fetching table data:', error));
+        }
+    </script>
+</body>
+</html>
