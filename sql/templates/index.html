@@ -4,12 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload SQLite DB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+       body {
+        font-family: 'Montserrat', sans-serif;
+
+  background-color: #100d1e; /* Lighter background */
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+h2 {
+  color: #3498db; /* Blue accent */
+  font-weight: 500;
+  margin-bottom: 25px;
+}
+
+form {
+  /* background-color: #fff; */
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: rgb(199, 199, 199);
+  text-align: center;
+}
+
+input[type="file"] {
+margin-bottom: 20px;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ced4da; /* Lighter border */
+  width: 100%;
+  color: white;
+}
+
+button {
+  background-color: #4285f4; /* Google's blue */
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #3367d6;
+}
+
+    </style>
 </head>
 <body>
-    <h2>Upload SQLite Database File</h2>
+
     <form action="{% url 'upload_db' %}" method="post" enctype="multipart/form-data">
+        <h1>QueryCraft</h1>
+        <p style="margin-top: -10px;margin-bottom: 50px;">Effortlessly transform your data into insights with AI-driven SQL generation and real-time query results</p>
+        <img style="width: 600px;max-width: 80vw;height: auto;border-radius: 10px;margin-bottom: 40px;" src="https://media2.giphy.com/media/vISmwpBJUNYzukTnVx/giphy.gif?cid=6c09b952nvvuotc8b6m81ungwj6btlxryg4oyudtyxoyfq8b&ep=v1_gifs_search&rid=giphy.gif&ct=g" alt="">
         {% csrf_token %}
-        <input type="file" name="db_file" accept=".sqlite,.db,.sqlite3" required>
+        <h2>Upload SQLite Database File</h2>
+        <input type="file" name="db_file" accept=".sqlite,.db,.sqlite3,.sql" required>
         <button type="submit">Upload</button>
     </form>
 </body>

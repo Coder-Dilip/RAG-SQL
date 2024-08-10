@@ -24,7 +24,7 @@
   width: 200px;
   padding: 10px;
   border-radius: 5px;
-  margin-bottom: 200px;
+  margin-bottom: 300px;
 }
 
 #table-list ul {
@@ -73,10 +73,80 @@ tr:nth-child(even) {
   background-color: #f9f9f9;
 
 }
-    </style>
+
+#navbar{
+display: flex;
+justify-content: space-between;
+margin: 3vw;
+margin-bottom: 0vw;
+}
+
+#prompt_container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+#prompt_bar{
+    height: 50px;
+    width: 70vw;
+    max-width:500px;
+    padding: 10px; 
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+#sql-query{
+  display: none;
+    width: 98%;
+    min-height: 250px;
+    border-radius: 15px;
+    border: none;
+    padding: 20px;
+    background: #f7f7f7;
+    color: green;
+    font-size: 1.3rem;
+}
+
+#sql-message{
+  display: none;
+}
+
+#centered-gif {
+  display: none;
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000; /* Ensure it appears on top */
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+        }
+</style>
 </head>
 <body>
-    <h2 style="margin-left: 3vw;">Database Tables</h2>
+    
+    <div id="navbar">
+        <img style="width: 70px;height: 70px;object-fit: cover;" src="https://cdn-icons-png.freepik.com/512/12523/12523470.png" alt="">
+        <div>
+            <div id="prompt_container">
+                <textarea id="prompt_bar" placeholder="Enter your query here, Example: I want high-selling, affordable t-shirts"></textarea>
+                <img onclick="fetchTableOverview()" style="height: 50px;width: 50px;object-fit: cover;" src="https://cdn-icons-png.flaticon.com/512/4420/4420302.png" alt="">
+            </div>
+        </div>
+        <h2 style="visibility: hidden;" >Tables</h2>
+    </div>
+
+    <img id="centered-gif" src="https://www.icegif.com/wp-content/uploads/2023/07/icegif-1262.gif" alt="">
+    <br><br><br>
+    <div style="display: flex;align-items: center;">
+      <h2 style="margin-left: 3vw;" >Tables</h2>
+      <h1 id="hide-bar" style="margin-left: 5vw;cursor: pointer;" onclick="close_sidebar()" >❎</h1>
+
+    </div>
+
     <div id="container">
         <div id="table-list">
             <ul>
@@ -86,16 +156,24 @@ tr:nth-child(even) {
             </ul>
         </div>
         <div id="table-data">
-            <h3>Table Data</h3>
+            <h3 id="table-head">Table Data</h3>
             <div id="data-content">Select a table to view its data.</div>
+            <br>
+            <h2 id="sql-message">Here's the generated SQL query</h2>
+            <textarea id="sql-query"></textarea>
         </div>
     </div>
 
     <script>
+        const tableInfo = ('{{ table_info|escapejs }}');
+       console.log(tableInfo)
         function fetchTableData(tableName) {
+          document.getElementById('table-head').textContent='Table Data'
+          document.getElementById('sql-query').style.display='none'
+          document.getElementById('sql-message').style.display='none'
             const dbPath = "{{ db_path }}";
             console.log(dbPath)
-            fetch(`/get-table-data/?table_name=${tableName}&db_path=${dbPath}`)
+            fetch(`/get-table-data/?table_name=${tableName}&db_path=${dbPath}&table_info=${tableInfo}`)
                 .then(response => response.json())
                 .then(data => {
                     let html = '<table border="1"><tr>';
@@ -119,6 +197,80 @@ tr:nth-child(even) {
                 })
                 .catch(error => console.error('Error fetching table data:', error));
         }
+
+        function fetchTableOverview() {
+          document.getElementById("centered-gif").style.display='block'
+    let query = document.getElementById("prompt_bar").value;
+    const db_name = '{{ db_path }}';
+    console.log(query);
+    
+    if (query) {
+        fetch(`/get-table-overview/?table_info=${tableInfo}&query=${query}&table_name=${db_name}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById("centered-gif").style.display='none'
+                renderTable(data.data); // Pass the data to the renderTable function
+                document.getElementById('sql-query').value=data.query
+            })
+            .catch(error => console.error('Error fetching table data:', error));
+    }
+}
+
+function renderTable(data) {
+    const dataContent = document.getElementById('data-content');
+    document.getElementById('table-head').textContent="Here's the result to your query"
+    document.getElementById('table-head').style.color="gray"
+    document.getElementById('sql-query').style.display='block'
+    document.getElementById('sql-message').style.display='block'
+    // Clear any existing content
+    dataContent.innerHTML = '';
+
+    if (data.length === 0) {
+        dataContent.innerHTML = '<p>No data found.</p>';
+        return;
+    }
+
+    // Create a table element
+    const table = document.createElement('table');
+    table.classList.add('data-table'); // Add a class for styling
+
+    // Create the table header row
+    const headerRow = document.createElement('tr');
+    Object.keys(data[0]).forEach(column => {
+        const th = document.createElement('th');
+        th.textContent = column;
+        headerRow.appendChild(th);
+    });
+    table.appendChild(headerRow);
+
+    // Create table rows for each data entry
+    data.forEach(rowData => {
+        const row = document.createElement('tr');
+        Object.values(rowData).forEach(cellData => {
+            const td = document.createElement('td');
+            td.textContent = cellData;
+            row.appendChild(td);
+        });
+        table.appendChild(row);
+    });
+
+    // Append the table to the data-content div
+    dataContent.appendChild(table);
+}
+
+
+
+function close_sidebar(){
+  let current_mark=document.getElementById("hide-bar").textContent
+  if (current_mark=='❎'){
+  document.getElementById("table-list").style.display='none'
+  document.getElementById("hide-bar").textContent="➡️"
+  }else{
+    document.getElementById("table-list").style.display='block'
+  document.getElementById("hide-bar").textContent="❎"
+  }
+}
     </script>
 </body>
 </html>
