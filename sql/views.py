@@ -9,61 +9,9 @@ from django.views.decorators.csrf import csrf_exempt
 # Configure the SDK with your API key
 genai.configure(api_key=config('GOOGLE_API_KEY'))
 
-
-import json
-
-@csrf_exempt
-def classify_query(request):
-    prompt1 = """
-    I want you to only provide me a list of table names in string format, separated by commas, which can be associated with the user query provided.
-    table_descriptions = [
-        {
-            "Users": "The 'Users' table stores information about the customers using the food delivery service."
-        },
-        {
-            "Restaurants": "The 'Restaurants' table holds details about the restaurants partnered with the service."
-        },
-        {
-            "MenuItems": "The 'MenuItems' table stores information about the food items offered by each restaurant."
-        },
-        {
-            "Orders": "The 'Orders' table captures the details of each order placed by users."
-        },
-        {
-            "OrderItems": "The 'OrderItems' table records the specific items included in each order."
-        }
-    ]
-    user_query = "I want names of the users who have ordered more than 100 items from my restaurant named 'dilip kitchen'. I want to provide them discount vouchers"
-    """
-
-    if prompt1:
-        model_name = 'gemini-1.0-pro'
- 
-
-        # Initialize the Generative Model
-        model = genai.GenerativeModel(model_name)
-        response = model.generate_content(prompt1)
-
-        # Extract and process the response
-        result_text = response.text.strip()
-        table_names = [name.strip() for name in result_text.split(',')]
-        print("First Response", table_names)
-
-
-        return JsonResponse({'table_names': table_names})
-
-    return JsonResponse({'error': 'No query provided'}, status=400)
-
-
-
-
-
-
-
 import os
 import sqlite3
-from django.http import JsonResponse
-from django.shortcuts import render
+import json
 from django.conf import settings
 import uuid
 def upload_db(request):

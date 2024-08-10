@@ -1,12 +1,26 @@
-Thanks for sharing the `views.py` code! Here’s a draft for your `README.md` that captures the essence of your Django project. Feel free to adjust any details as needed:
-
----
-
 # Django RAG-SQL Project
-
+# Dilip Pokhrel
 ## Overview
 
 This Django project allows users to upload SQL or SQLite files, which are then processed to generate SQL queries using the Gemini Pro LLM. The results are displayed on the frontend, providing a seamless experience for interacting with the database.
+
+This project can be called **RAG-SQL** because it leverages a **R**etrieval-**A**ugmented **G**eneration (RAG) approach combined with SQL to generate and execute SQL queries based on user input.
+
+Here's how it aligns with the RAG methodology:
+
+1. **Retrieval (R)**:
+   - The project retrieves relevant information from the uploaded database files (either SQL or SQLite) by analyzing the structure, extracting table names, and gathering column details. 
+   - When a user query is provided, the system retrieves the relevant table names and schema information from the database, which are then used to guide the generation of SQL queries.
+
+2. **Augmentation (A)**:
+   - The retrieved information (such as table descriptions and schema) is augmented with the user’s query to form a more contextually rich input for the generative model.
+   - This augmentation step ensures that the generated SQL queries are accurate and aligned with the structure of the database.
+
+3. **Generation (G)**:
+   - The project uses a Large Language Model (LLM) like Gemini Pro to generate SQL queries. The LLM generates SQL code based on the augmented input (the user's query combined with the database schema).
+   - This generation step is the core of the RAG approach, where the model generates the final SQL query that can be executed on the database.
+
+In essence, **RAG-SQL** reflects the combination of retrieving and augmenting relevant database information, and then using this augmented data to generate SQL queries dynamically with the help of an LLM. The term "RAG-SQL" aptly describes the innovative approach taken in the project, integrating the RAG methodology with SQL query generation and execution.
 
 ## Features
 
@@ -66,7 +80,6 @@ This Django project allows users to upload SQL or SQLite files, which are then p
 ## How It Works
 
 - **`views.py`**: Handles the core logic for file uploads, conversions, query classification, and SQL generation.
-  - `classify_query`: Extracts table names based on user queries.
   - `upload_db`: Manages file uploads, converts SQL files to SQLite, and retrieves table information.
   - `get_table_data`: Fetches data from the selected table.
   - `get_table_overview`: Provides an overview of table details and generates SQL queries.
@@ -95,7 +108,7 @@ Feel free to fork the repository and submit pull requests. For major changes, pl
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ---
 
